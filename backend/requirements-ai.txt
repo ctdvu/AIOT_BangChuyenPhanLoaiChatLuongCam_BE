@@ -1,0 +1,6 @@
+# Install after requirements.txt. CPU setup uses the official PyTorch CPU index.
+# Keep the handed-over pair on Python 3.11/3.12; Python 3.13 needs newer wheels.
+torch==2.5.1; python_version < "3.13"
+torchvision==0.20.1; python_version < "3.13"
+torch==2.6.0; python_version >= "3.13"
+torchvision==0.21.0; python_version >= "3.13"

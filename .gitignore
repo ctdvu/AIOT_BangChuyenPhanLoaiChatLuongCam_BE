@@ -1,0 +1,46 @@
+# Local environment settings (keep shareable templates)
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Python environments and generated files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+pytest-cache-files-*/
+.coverage
+.coverage.*
+htmlcov/
+
+# Frontend dependencies and build output
+node_modules/
+frontend/dist/
+
+# Runtime images (keep the empty uploads directory in Git)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Local databases, journals and database backups
+# Share the empty-database setup script (backend/create_database.sql), not runtime data.
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*_backup.sql
+*_backup_*.sql
+*_dump.sql
+*.sql.gz
+backups/
+
+# Local test/browser artifacts and logs
+.task-temp/
+*.log
+
+# Operating system artifacts
+.DS_Store
+Desktop.ini

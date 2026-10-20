@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ece9df"/><stop offset="1" stop-color="#d0cabe"/></linearGradient>
+    <radialGradient id="fruit" cx="38%" cy="28%"><stop stop-color="#ffad2e"/><stop offset=".67" stop-color="#df7217"/><stop offset="1" stop-color="#aa470f"/></radialGradient>
+    <filter id="shadow"><feGaussianBlur stdDeviation="18"/></filter>
+  </defs>
+  <rect width="960" height="640" fill="url(#bg)"/>
+  <path d="M0 485H960V640H0z" fill="#414039"/><path d="M0 505H960" stroke="#817d72" stroke-width="9" stroke-dasharray="80 25"/>
+  <ellipse cx="480" cy="508" rx="198" ry="35" fill="#1c1a16" opacity=".4" filter="url(#shadow)"/>
+  <path d="M315 361c0-112 57-199 166-199 119 0 177 80 168 193-8 104-69 159-171 159-104 0-163-58-163-153z" fill="url(#fruit)"/>
+  <path d="M481 166c24-50 61-68 105-61-23 38-58 58-105 61z" fill="#54723b"/>
+  <path d="M484 173c-1-39 10-67 32-91" fill="none" stroke="#59462e" stroke-width="13" stroke-linecap="round"/>
+  <g fill="#7d431e" opacity=".83"><ellipse cx="570" cy="365" rx="34" ry="25" transform="rotate(24 570 365)"/><circle cx="380" cy="396" r="18"/><circle cx="410" cy="422" r="9"/></g>
+  <path d="M365 328c67 17 131 8 190-27" fill="none" stroke="#8c4a20" stroke-width="11" stroke-linecap="round" opacity=".72"/>
+  <path d="M373 326c67 13 128 4 177-24" fill="none" stroke="#f6a245" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+  <text x="42" y="58" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#443c31">MẪU MINH HỌA · CAM CÓ KHUYẾT TẬT</text>
+</svg>

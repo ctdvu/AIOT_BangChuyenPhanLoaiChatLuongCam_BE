@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e9ede4"/><stop offset="1" stop-color="#cbd2c5"/></linearGradient>
+    <radialGradient id="fruit" cx="38%" cy="30%"><stop stop-color="#ffb133"/><stop offset=".65" stop-color="#ef7e19"/><stop offset="1" stop-color="#bd4f0e"/></radialGradient>
+    <filter id="shadow"><feGaussianBlur stdDeviation="18"/></filter>
+  </defs>
+  <rect width="960" height="640" fill="url(#bg)"/>
+  <path d="M0 485H960V640H0z" fill="#39423b"/><path d="M0 505H960" stroke="#778078" stroke-width="9" stroke-dasharray="80 25"/>
+  <ellipse cx="480" cy="506" rx="192" ry="34" fill="#182019" opacity=".45" filter="url(#shadow)"/>
+  <circle cx="480" cy="340" r="176" fill="url(#fruit)"/>
+  <path d="M482 166c18-53 53-78 100-76-17 42-50 68-100 76z" fill="#3f7138"/>
+  <path d="M482 176c-4-45 5-75 24-100" fill="none" stroke="#55452c" stroke-width="13" stroke-linecap="round"/>
+  <ellipse cx="423" cy="284" rx="48" ry="30" fill="#ffd27d" opacity=".36" transform="rotate(-28 423 284)"/>
+  <g fill="#d86413" opacity=".35"><circle cx="390" cy="398" r="5"/><circle cx="554" cy="268" r="4"/><circle cx="565" cy="405" r="5"/><circle cx="350" cy="336" r="4"/></g>
+  <text x="42" y="58" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#314234">MẪU MINH HỌA · CAM ĐẸP</text>
+</svg>
