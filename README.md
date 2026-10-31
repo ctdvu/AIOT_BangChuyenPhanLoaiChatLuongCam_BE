@@ -309,3 +309,4 @@ Tài liệu API đầy đủ có tại `/docs` khi backend đang chạy. API thi
 Hai API `POST /api/device/events/fruit-arrived` và `POST /api/device/events/sorting-completed` hiện chỉ xác nhận nhận sự kiện, chưa tạo lệnh điều khiển phần cứng.
 
 Khi đưa dự án lên GitHub, giữ các tệp `.env.example`, script tạo database, requirements và `package-lock.json` trong repository. Giữ thông tin kết nối thực tế trong `.env` riêng của từng máy. Các tệp SQLite thử nghiệm như `test.db` ở thư mục gốc không thay thế database MySQL đang vận hành; nên bỏ chúng khỏi bản mã nguồn bàn giao.
+# AIOT_BangChuyenPhanLoaiChatLuongCam_BE

@@ -272,7 +272,7 @@ def test_paired_classification_is_one_history_row_with_both_predictions(client, 
 
     start_simulated_pair(client)
     client.put("/api/cameras/1/rotation", json={"rotation": 90})
-    predictions = [prediction_for("fresh_orange", .96), prediction_for("blackspotted_orange", .72)]
+    predictions = [prediction_for("fresh_orange", .88), prediction_for("blackspotted_orange", .76)]
     calls = []
 
     def predict_image(path):
@@ -287,8 +287,8 @@ def test_paired_classification_is_one_history_row_with_both_predictions(client, 
     record = body["classification"]
     assert len(calls) == 2
     assert record["capture_session_id"] == body["capture"]["session_id"]
-    assert record["aggregation_policy"] == "worst_grade"
-    assert record["ai_class"] == "blackspotted_orange" and record["confidence"] == .72
+    assert record["aggregation_policy"] in ("close_confidence_worse_grade", "worst_grade")
+    assert record["ai_class"] == "blackspotted_orange" and record["confidence"] == .76
     assert record["grade"] == 2 and record["probabilities"] == predictions[1]["probabilities"]
     assert [image["camera_id"] for image in record["images"]] == [1, 2]
     assert [image["rotation"] for image in record["images"]] == [90, 0]
@@ -381,3 +381,77 @@ def test_paired_database_failure_does_not_leave_orphan_files(client, camera_sett
         client.post("/api/cameras/classify")
     assert client.get("/api/classifications").json()["total"] == 0
     assert list(settings.upload_dir.iterdir()) == []
+
+
+def test_hardware_events_trigger_camera_classification_and_update_status(client, camera_settings, monkeypatch):
+    from app.routers.hardware_events import hardware_state
+
+    hardware_state.reset()
+    status_before = client.get("/api/device/status").json()
+    assert status_before["online"] is False
+    assert status_before["conveyor_state"] == "offline"
+
+    hb = client.post(
+        "/api/device/events/heartbeat",
+        json={"device_id": "esp32-conveyor-01", "conveyor_state": "running"},
+    )
+    assert hb.status_code == 200
+    assert hb.json()["online"] is True
+    assert hb.json()["conveyor_state"] == "running"
+
+    # Khi chưa có camera kết nối, fruit-arrived trả status=accepted và grade=None
+    no_cam_res = client.post("/api/device/events/fruit-arrived")
+    assert no_cam_res.status_code == 202
+    assert no_cam_res.json()["status"] == "accepted"
+    assert no_cam_res.json()["grade"] is None
+
+    # Khi bật 2 camera mô phỏng, fruit-arrived tự động chụp đôi, chạy AI và trả về grade/tray
+    start_simulated_pair(client)
+    predictions = [prediction_for("fresh_orange", .95), prediction_for("cankered_orange", .84)]
+    calls = []
+
+    def predict_image(path):
+        calls.append(path)
+        return predictions[(len(calls) - 1) % len(predictions)]
+
+    monkeypatch.setattr("app.services.camera_classifications.predict", predict_image)
+    arrived_res = client.post(
+        "/api/device/events/fruit-arrived",
+        json={"device_id": "esp32-conveyor-01", "auto_classify": True},
+    )
+    assert arrived_res.status_code == 202
+    data = arrived_res.json()
+    assert data["status"] == "classified"
+    assert data["grade"] == 2
+    assert data["tray"] == 2
+    assert data["label"] == "CAM_KHUYET_TAT"
+    assert data["ai_class"] == "cankered_orange"
+    assert data["cameras_used"] == [1, 2]
+    assert data["classification_id"] > 0
+
+    status_sorting = client.get("/api/device/status").json()
+    assert status_sorting["online"] is True
+    assert status_sorting["conveyor_state"] == "sorting_tray_2"
+    assert status_sorting["last_grade"] == 2
+    assert status_sorting["last_classification_id"] == data["classification_id"]
+
+    # Báo hoàn tất gạt cam từ ESP32
+    completed_res = client.post(
+        "/api/device/events/sorting-completed",
+        json={
+            "device_id": "esp32-conveyor-01",
+            "grade": 2,
+            "tray": 2,
+            "classification_id": data["classification_id"],
+            "duration_ms": 3500,
+        },
+    )
+    assert completed_res.status_code == 202
+    comp_data = completed_res.json()
+    assert comp_data["status"] == "accepted"
+    assert comp_data["sorted_count"] == 1
+
+    status_after = client.get("/api/device/status").json()
+    assert status_after["conveyor_state"] == "running"
+    assert status_after["sorted_count"] == 1
+

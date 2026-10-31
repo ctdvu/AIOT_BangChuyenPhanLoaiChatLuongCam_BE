@@ -22,6 +22,7 @@ def classification_response(
 
     return ClassificationResponse(
         id=record.id,
+        farm_id=record.farm_id,
         label=record.label,
         display_name=category.display_name,
         confidence=record.confidence,

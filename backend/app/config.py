@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     camera_read_timeout: float = 3.0
     camera_frame_max_age: float = 2.0
     camera_pair_max_skew: float = 0.25
+    secret_key: str = "orange-sorting-ec2-secret-key-change-in-prod"
+    access_token_expire_hours: int = 72
+    confidence_gap_threshold: float = 0.20
+    allow_unauthenticated_device_in_tests: bool = True
 
     model_config = SettingsConfigDict(
         env_file=BACKEND_DIR / ".env",

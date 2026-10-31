@@ -20,10 +20,55 @@ class CameraOrientation(Base):
     rotation: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
 
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    username: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(256), nullable=False)
+    full_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    role: Mapped[str] = mapped_column(String(20), nullable=False, index=True)  # "admin", "farm", "dealer"
+    phone: Mapped[str] = mapped_column(String(32), nullable=False, default="")
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    farm: Mapped["Farm | None"] = relationship(
+        "Farm", back_populates="owner", uselist=False, cascade="all, delete-orphan", lazy="selectin"
+    )
+
+
+class Farm(Base):
+    __tablename__ = "farms"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    owner_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True, unique=True)
+    name: Mapped[str] = mapped_column(String(128), nullable=False)
+    location: Mapped[str] = mapped_column(String(256), nullable=False, default="")
+    contact_phone: Mapped[str] = mapped_column(String(32), nullable=False, default="")
+    description: Mapped[str] = mapped_column(String(512), nullable=False, default="")
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    service_plan: Mapped[str] = mapped_column(String(64), nullable=False, default="Gói Tiêu Chuẩn")
+    subscription_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    device_api_key: Mapped[str] = mapped_column(String(128), unique=True, index=True, nullable=False)
+    bound_mac_address: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    device_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    cam1_rotation: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    cam2_rotation: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    owner: Mapped["User | None"] = relationship("User", back_populates="farm")
+    classifications: Mapped[list["Classification"]] = relationship(
+        "Classification", back_populates="farm", cascade="all, delete-orphan"
+    )
+
+
 class Classification(Base):
     __tablename__ = "classifications"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    farm_id: Mapped[int | None] = mapped_column(ForeignKey("farms.id"), nullable=True, index=True)
     label: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
     confidence: Mapped[float] = mapped_column(Float, nullable=False)
     tray: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -31,7 +76,10 @@ class Classification(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False, index=True
     )
-    source: Mapped[str] = mapped_column(String(20), nullable=False, default="simulation")
+    source: Mapped[str] = mapped_column(String(20), nullable=False, default="device")
+    farm: Mapped["Farm | None"] = relationship(
+        "Farm", back_populates="classifications", lazy="selectin"
+    )
     prediction_detail: Mapped["PredictionDetail | None"] = relationship(
         back_populates="classification", uselist=False, cascade="all, delete-orphan",
         lazy="selectin",

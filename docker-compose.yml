@@ -1,0 +1,55 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: orange_sorting_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: orange_root_password_2026
+      MYSQL_DATABASE: orange_sorting
+      MYSQL_USER: orange_user
+      MYSQL_PASSWORD: orange_password_2026
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "orange_user", "-porange_password_2026"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: orange_sorting_backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: mysql+pymysql://orange_user:orange_password_2026@db:3306/orange_sorting?charset=utf8mb4
+      SECRET_KEY: orange-sorting-ec2-super-secret-key-change-prod
+      CONFIDENCE_GAP_THRESHOLD: "0.20"
+      ALLOW_UNAUTHENTICATED_DEVICE_IN_TESTS: "False"
+      FRONTEND_ORIGINS: "*"
+    volumes:
+      - uploads_data:/app/backend/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: orange_sorting_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
+  uploads_data:
