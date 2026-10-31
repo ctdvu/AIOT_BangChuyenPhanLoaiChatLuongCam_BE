@@ -30,7 +30,7 @@ services:
       SECRET_KEY: orange-sorting-ec2-super-secret-key-change-prod
       CONFIDENCE_GAP_THRESHOLD: "0.20"
       ALLOW_UNAUTHENTICATED_DEVICE_IN_TESTS: "False"
-      FRONTEND_ORIGINS: "*"
+      FRONTEND_ORIGINS: '["*"]'
     volumes:
       - uploads_data:/app/backend/uploads
     depends_on:

@@ -16,13 +16,13 @@ class Settings(BaseSettings):
     )
     app_host: str = "0.0.0.0"
     app_port: int = 8000
-    frontend_origins: list[str] = [
+    frontend_origins: str | list[str] = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
     ]
     max_image_size_mb: int = 10
     upload_dir: Path = BACKEND_DIR / "uploads"
-    camera_allowed_hosts: list[str] = []
+    camera_allowed_hosts: str | list[str] = []
     camera_simulation_enabled: bool = False
     camera_connect_timeout: float = 5.0
     camera_read_timeout: float = 3.0
@@ -39,12 +39,14 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    @field_validator("frontend_origins", mode="before")
+    @field_validator("frontend_origins", "camera_allowed_hosts", mode="before")
     @classmethod
-    def split_origins(cls, value: object) -> object:
+    def split_origins(cls, value: object) -> list[str]:
         if isinstance(value, str):
             return [item.strip() for item in value.split(",") if item.strip()]
-        return value
+        if isinstance(value, list):
+            return [str(item).strip() for item in value if str(item).strip()]
+        return []
 
 
 @lru_cache
