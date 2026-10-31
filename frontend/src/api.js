@@ -1,6 +1,17 @@
-export const API_BASE_URL = (
-  (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) || "http://localhost:8000"
-).replace(/\/$/, "");
+function resolveApiBaseUrl() {
+  if (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL.replace(/\/$/, "");
+  }
+  if (typeof window !== "undefined") {
+    if (window.location.port && window.location.port !== "80" && window.location.port !== "443") {
+      return `${window.location.protocol}//${window.location.hostname}:8000`;
+    }
+    return "";
+  }
+  return "http://localhost:8000";
+}
+
+export const API_BASE_URL = resolveApiBaseUrl();
 
 let currentToken = typeof localStorage !== "undefined" ? localStorage.getItem("orange_sort_token") : null;
 
