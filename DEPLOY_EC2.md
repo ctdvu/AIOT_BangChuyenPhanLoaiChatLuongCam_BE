@@ -30,11 +30,12 @@ Tài liệu này hướng dẫn chi tiết cách deploy hệ thống Backend AI,
 
 ## 2. Chuẩn Bị Máy Chủ AWS EC2
 
-### 2.1. Chọn Cấu Hình Instance
+### 2.1. Chọn Cấu Hình Instance & Dung Lượng Ổ Cứng
 - **Hệ điều hành khuyến nghị**: `Ubuntu 24.04 LTS` hoặc `Ubuntu 22.04 LTS`.
 - **Loại Instance**:
   - Tối ưu chi phí & hiệu năng: **`t3.medium`** (2 vCPU, 4GB RAM) hoặc **`c5.large`**.
   - Nếu dùng gói miễn phí **`t2.micro`** hoặc **`t3.small`** (1GB - 2GB RAM): **Bắt buộc** phải tạo Swap File 2GB (xem mục 3.2 bên dưới) để tránh tràn RAM khi PyTorch nạp trọng số mô hình.
+- **Dung lượng ổ cứng (Configure Storage)**: Chọn tối thiểu **`20 GiB`** (gp3) thay vì 8 GiB mặc định (Gói AWS Free Tier miễn phí tới **30 GiB**, nếu để 8 GiB sẽ bị báo lỗi `no space left on device` khi giải nén Docker image của MySQL + PyTorch + OpenCV).
 
 ### 2.2. Cấu hình Security Group (Inbound Rules)
 Vào AWS Console -> EC2 -> Security Groups -> Edit Inbound Rules:
